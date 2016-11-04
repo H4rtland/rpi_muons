@@ -1,14 +1,20 @@
+{% import 'admin/layout.html' as layout with context -%}
+{% import 'admin/static.html' as admin_static with context %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 </head>
 <body>
     <div class="container">
     {{ nav.nav_bar_renderer.render() }}
     <div style="padding-top: 60px;">
+        {{ layout.messages() }}
         {% block body %}{% endblock %}
     </div>
 </div>

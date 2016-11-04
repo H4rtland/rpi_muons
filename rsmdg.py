@@ -1,20 +1,34 @@
 from flask import Flask
 from flask import render_template
+
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup
-
 from flask_bootstrap import Bootstrap
+from flask_admin import Admin
+
+# Import blueprints
+from detector.views import detector as detector_views
 
 app = Flask(__name__)
+
+app.config.update(
+    SECRET_KEY="verysecretkey",
+)
+
 Bootstrap(app)
 nav = Nav()
 nav.init_app(app)
+admin = Admin(app, name="rsmdg", template_mode="bootstrap3")
+
+# register blueprints
+app.register_blueprint(detector_views)
 
 
 @nav.navigation()
 def nav_bar_renderer():
     items = []
     items.append(View("Home", "index"))
+    items.append(View("Detector", "detector.detector_status"))
     navbar = Navbar("rsmdg", *items)
     html = navbar.render()
     html = html.replace("navbar navbar-default", "navbar navbar-inverse navbar-fixed-top")
