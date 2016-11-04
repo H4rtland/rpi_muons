@@ -1,0 +1,6 @@
+{% extends "master.html" %}
+{% block title %}Example result{% endblock %}
+{% block body %}
+    <p>Total events: {{ total_events }}</p>
+    {{ charthtml|safe }}
+{% endblock %}
