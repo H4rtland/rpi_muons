@@ -2,7 +2,7 @@ from flask import Flask
 from flask import render_template
 
 from flask_nav import Nav
-from flask_nav.elements import Navbar, View, Subgroup
+from flask_nav.elements import Navbar, View, Subgroup, Text, Separator
 from flask_bootstrap import Bootstrap
 from flask_admin import Admin
 
