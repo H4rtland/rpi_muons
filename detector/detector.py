@@ -5,17 +5,50 @@ from mathutils import Vector
 
 Path = namedtuple("Path", ["xi", "yi", "zi", "xf", "yf", "zf"])
 
-def path_passes_through_cube(path, x, y, z, w, d, h):
+def path_passes_through_plane(path, x, y, z, w, d, h, direction):
     line_start = Vector((path.xi, path.yi, path.zi))
     line_end = Vector((path.xf, path.yf, path.zf))
 
     plane_point = Vector((x, y, z))
-    plane_direction = Vector((0, 0, 1))
+    plane_direction = direction
+
+    w = -w
+    h = -h
+    d = -d
 
     intersection = mathutils.geometry.intersect_line_plane(line_start, line_end, plane_point, plane_direction)
-    if x < intersection.x < x+w and y < intersection.y < y+h:
-        return True
-    return False
+    if intersection is None:
+        return False
+    if direction.x == 0:
+        if not (intersection.x < x < intersection.x+w):
+            return False
+    if direction.y == 0:
+        if not (intersection.y < y < intersection.y+d):
+            return False
+    if direction.z == 0:
+        if not (intersection.z < z < intersection.z+h):
+            return False
+    return True
+
+def path_passes_through_cube(path, x, y, z, w, d, h):
+    near_corner = (x, y, z)
+    far_corner = (x+w, y+d, z+h)
+    anchor_points = (near_corner, near_corner, near_corner,
+                     far_corner, far_corner, far_corner)
+    directions = (Vector((0, -1, 0)), # -y
+                  Vector((-1, 0, 0)), # -x
+                  Vector((0, 0, -1)), # -z
+                  Vector((0, 1, 0)), # +y
+                  Vector((1, 0, 0)), # +x
+                  Vector((0, 0, 1))) # +z
+    dimensions = ((w, 0, h),
+                  (0, d, h),
+                  (w, d, 0),
+                  (-w, 0, -h),
+                  (0, -d, -h),
+                  (-w, -d, 0))
+    # todo: convert direction vectors to dimensions automagically
+    return any([path_passes_through_plane(path, *anchor_points[i], *dimensions[i], directions[i]) for i in range(0, len(anchor_points))])
 
 
 

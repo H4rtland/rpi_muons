@@ -2,6 +2,8 @@
 {% block title %}Example result{% endblock %}
 {% block body %}
     <p>Total events: {{ total_events }}</p>
+    <p>Paths shown: {{ paths_shown }}</p>
     {{ charthtml|safe }}
     {{ chartdensity|safe }}
+    {{ intersect_distribution|safe }}
 {% endblock %}
