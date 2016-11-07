@@ -26,7 +26,7 @@ def example_result():
     #ys = []
     #zs = []
     total = 0
-    while total < 100000:
+    while total < 4000:
         xi, yi, zi = random.random(), random.random(), 1
         xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
         if (0 < xf < 1) and (0 < yf < 1):
