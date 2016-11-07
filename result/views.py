@@ -14,6 +14,7 @@ result = Blueprint("result", __name__)
 def example_result():
     """
     idea: cache plotly html files, offer "replot" on result page
+    idea: when path start/end are quantized, cache volume check results
     """
 
     start_time = time.perf_counter()
@@ -25,7 +26,7 @@ def example_result():
     #ys = []
     #zs = []
     total = 0
-    while total < 10000:
+    while total < 20000:
         xi, yi, zi = random.random(), random.random(), 1
         xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
         if (0 < xf < 1) and (0 < yf < 1):
