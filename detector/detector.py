@@ -35,20 +35,29 @@ def path_passes_through_cube(path, x, y, z, w, d, h):
     far_corner = (x+w, y+d, z+h)
     anchor_points = (near_corner, near_corner, near_corner,
                      far_corner, far_corner, far_corner)
-    directions = (Vector((0, -1, 0)), # -y
-                  Vector((-1, 0, 0)), # -x
-                  Vector((0, 0, -1)), # -z
-                  Vector((0, 1, 0)), # +y
-                  Vector((1, 0, 0)), # +x
-                  Vector((0, 0, 1))) # +z
-    dimensions = ((w, 0, h),
-                  (0, d, h),
-                  (w, d, 0),
-                  (-w, 0, -h),
-                  (0, -d, -h),
-                  (-w, -d, 0))
+    directions = (
+        Vector((0, 0, -1)), # -z
+        Vector((0, -1, 0)), # -y
+        Vector((-1, 0, 0)), # -x
+        Vector((0, 0, 1)), # +z
+        Vector((0, 1, 0)), # +y
+        Vector((1, 0, 0)), # +x
+    )
+    dimensions = (
+        (w, d, 0),
+        (w, 0, h),
+        (0, d, h),
+        (-w, -d, 0),
+        (-w, 0, -h),
+        (0, -d, -h),
+    )
     # todo: convert direction vectors to dimensions automagically
-    return any([path_passes_through_plane(path, *anchor_points[i], *dimensions[i], directions[i]) for i in range(0, len(anchor_points))])
+
+    # normal brackets are a generator comprehension, as opposed to a list comprehension
+    # any returns true on the first true item in a generator comprehension
+    # but evaluates all terms in a list comprehension before returning
+    # this had no effect on performance but it's a nice thing to know
+    return any((path_passes_through_plane(path, *anchor_points[i], *dimensions[i], directions[i]) for i in range(0, len(anchor_points))))
 
 
 

@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template
+from flask import render_template, jsonify
 
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup, Text, Separator
@@ -41,6 +41,10 @@ def nav_bar_renderer():
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route("/status")
+def status():
+    return jsonify(**{"STATUS":1, "CURRENT_COUNT":211575})
 
 
 if __name__ == '__main__':

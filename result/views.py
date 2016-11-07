@@ -1,14 +1,10 @@
 from flask import Blueprint, render_template, flash
 
 import random
-
-from operator import itemgetter
+import time
 
 import plotly
 import plotly.graph_objs as go
-import numpy as np
-
-from collections import OrderedDict
 
 from detector.detector import Path, path_passes_through_cube
 
@@ -20,6 +16,7 @@ def example_result():
     idea: cache plotly html files, offer "replot" on result page
     """
 
+    start_time = time.perf_counter()
     #p = Path(0.55, 0.55, 1, 0.55, 0.55, 0)
     #print(path_passes_through_cube(p, 0.6, 0.6, 0.6, 0.1, 0.1, 0.1))
 
@@ -28,7 +25,7 @@ def example_result():
     #ys = []
     #zs = []
     total = 0
-    while total < 4000:
+    while total < 10000:
         xi, yi, zi = random.random(), random.random(), 1
         xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
         if (0 < xf < 1) and (0 < yf < 1):
@@ -229,5 +226,5 @@ def example_result():
     html3 = plotly.offline.plot(fig, auto_open=False, output_type="div", show_link=False, image_width=500, filename="scatter_plot", validate=False)
 
 
-
+    print("Request time: {}".format(time.perf_counter()-start_time))
     return render_template("example_result.html", charthtml=html, chartdensity=html2, total_events=len(lines), paths_shown=paths_shown, intersect_distribution=html3)
