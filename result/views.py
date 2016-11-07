@@ -26,12 +26,12 @@ def example_result():
     #ys = []
     #zs = []
     total = 0
-    while total < 20000:
+    while total < 100000:
         xi, yi, zi = random.random(), random.random(), 1
         xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
         if (0 < xf < 1) and (0 < yf < 1):
             p = Path(xi, yi, zi, xf, yf, zf)
-            if path_passes_through_cube(p, 0.40, 0.40, 0.40, 0.4, 0.4, 0.4) and random.random() > 0.2:
+            if path_passes_through_cube(p, 0.40, 0.40, 0.40, 0.2, 0.2, 0.2) and random.random() > 0.2:
                 continue
             lines.append(([xi, xf], [yi, yf], [zi, zf]))
             #xs += [xi, xf, None]

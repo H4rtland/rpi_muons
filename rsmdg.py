@@ -46,6 +46,10 @@ def index():
 def status():
     return jsonify(**{"STATUS":1, "CURRENT_COUNT":211575})
 
+@app.route("/100k")
+def render_100k():
+    return render_template("example100k.html")
+
 
 if __name__ == '__main__':
     app.run()
