@@ -12,6 +12,7 @@ def path_passes_through_plane(path, x, y, z, w, d, h, direction):
     plane_point = Vector((x, y, z))
     plane_direction = direction
 
+    # Don't ask.
     w = -w
     h = -h
     d = -d
