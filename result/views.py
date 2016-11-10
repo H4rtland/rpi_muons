@@ -33,7 +33,7 @@ def example_result():
     # 100000 Request time: 729.9082427835476 without caching
     # 100000 Request time: 754.6030013966841 with caching
     # 100000 Request time: 76.17804744634259 with easy checks
-    while len(lines) < 100000:
+    while len(lines) < 2000:
         # xi, yi, zi = random.random(), random.random(), 1
         # xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
         xi, yi, zi = 0.02 + 0.04*random.randint(0, 24), 0.02 + 0.04*random.randint(0, 24), 1
@@ -248,6 +248,14 @@ def example_result():
     fig = go.Figure(data=[trace,], layout=layout)
     html3 = plotly.offline.plot(fig, auto_open=False, output_type="div", show_link=False, image_width=500, filename="scatter_plot", validate=False)
 
-
-    print("Request time: {}".format(time.perf_counter()-start_time))
-    return render_template("example_result.html", charthtml=html, chartdensity=html2, total_events=len(lines), paths_shown=paths_shown, intersect_distribution=html3)
+    request_time = time.perf_counter()-start_time
+    print("Request time: {}".format(request_time))
+    kwargs = dict(
+        charthtml=html,
+        chartdensity=html2,
+        total_events=len(lines),
+        paths_shown=paths_shown,
+        intersect_distribution=html3,
+        request_time=request_time
+    )
+    return render_template("example_result.html", **kwargs)

@@ -3,6 +3,7 @@
 {% block body %}
     <p>Total events: {{ total_events }}</p>
     <p>Paths shown: {{ paths_shown }}</p>
+    <p>Request time: {{ request_time|round(2) }}s</p>
     {{ charthtml|safe }}
     {{ chartdensity|safe }}
     {{ intersect_distribution|safe }}
