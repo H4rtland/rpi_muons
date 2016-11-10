@@ -15,6 +15,7 @@ def example_result():
     """
     idea: cache plotly html files, offer "replot" on result page
     idea: when path start/end are quantized, cache volume check results
+    todo: move analysis code out of view
     """
 
     start_time = time.perf_counter()
@@ -25,20 +26,29 @@ def example_result():
     #xs = []
     #ys = []
     #zs = []
-    total = 0
-    while total < 4000:
-        xi, yi, zi = random.random(), random.random(), 1
-        xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
+    st = time.time()
+    # 10000 Request time: 69.24448532398439 with obstruction
+    # 10000 Request time: 70.08756806654017 without obstruction
+    # 10000 Request time: 7.622724069724689 with easy checks
+    # 100000 Request time: 729.9082427835476 without caching
+    # 100000 Request time: 754.6030013966841 with caching
+    # 100000 Request time: 76.17804744634259 with easy checks
+    while len(lines) < 100000:
+        # xi, yi, zi = random.random(), random.random(), 1
+        # xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
+        xi, yi, zi = 0.02 + 0.04*random.randint(0, 24), 0.02 + 0.04*random.randint(0, 24), 1
+        xf, yf, zf = xi+(0.04*random.randint(0, 24)-0.5), yi+(0.04*random.randint(0, 24)-0.5), 0
         if (0 < xf < 1) and (0 < yf < 1):
-            p = Path(xi, yi, zi, xf, yf, zf)
-            if path_passes_through_cube(p, 0.40, 0.40, 0.04, 0.2, 0.2, 0.2) and random.random() > 0.2:
-                continue
+            #p = Path(xi, yi, zi, xf, yf, zf)
+            #if path_passes_through_cube(p, 0.40, 0.40, 0.04, 0.2, 0.2, 0.2) and random.random() > 0.2:
+            #    continue
             lines.append(([xi, xf], [yi, yf], [zi, zf]))
             #xs += [xi, xf, None]
             #ys += [yi, yf, None]
             #zs += [zi, zf, None]
-            total += 1
             #lines.append(None)
+
+    print("Random generation time: {}".format(time.time()-st))
 
     datas = []
     col = '#1f77b4'
@@ -47,7 +57,7 @@ def example_result():
     zs = []
     paths_shown = 0
     for line in lines:
-        if random.random() > (200/len(lines)):
+        if random.random() > (400/len(lines)):
             continue
         xs += line[0] + [None,]
         ys += line[1] + [None,]
@@ -160,6 +170,7 @@ def example_result():
     #xs = []
     #ys = []
     #zs = []
+    st = time.time()
     datas = []
     max_intersects = 0
     resolution = 15
@@ -172,9 +183,19 @@ def example_result():
             y = _y/resolution
             intersecting_events = 0
             for line in lines:
-                p = Path(line[0][0], line[1][0], line[2][0], line[0][1], line[1][1], line[2][1])
-                if path_passes_through_cube(p, x, y, 0.5, 1/resolution, 1/resolution, 0.1):
+                x_i, x_f = line[0][0], line[0][1]
+                y_i, y_f = line[1][0], line[1][1]
+                z_i, z_f = line[2][0], line[2][1]
+                d = 1/resolution
+
+                # Don't bother with exact collision detection for paths with couldn't possibly intersect box (~10x speed gain)
+                if ((x_i < x and x_f < x) or (x_i > x+d and x_f > x+d) or (y_i < y and y_f < y) or (y_i > y+d and y_f > y+d)):
+                    continue
+
+                p = Path(x_i, y_i, z_i, x_f, y_f, z_f)
+                if path_passes_through_cube(p, x, y, 0.5, d, d, d):
                     intersecting_events += 1
+
 
             #xs.append(x)
             #ys.append(y)
@@ -187,6 +208,7 @@ def example_result():
         datas.append(xs)
 
     print("Total intersecting events: {}".format(total_intersections))
+    print("Intersection time: {}".format(time.time()-st))
 
     #for i in range(0, len(datas)):
     #    for j in range(0, len(datas[i])):
