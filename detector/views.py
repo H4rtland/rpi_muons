@@ -1,13 +1,22 @@
-from flask import Blueprint, render_template, flash, request
+from flask import Blueprint, render_template, flash, request, jsonify
 
-import time
+import time, random
 
 detector = Blueprint("detector", __name__)
 
 class TempDetector:
     running = False
-    started_running = 0
+    started_running = time.time()
     status = "OK"
+    last_check_time = 0
+    total_muons = 0
+
+    @staticmethod
+    def start():
+        TempDetector.started_running = time.time()
+        TempDetector.total_muons = 0
+        TempDetector.last_check_time = 0
+        TempDetector.running = True
 
     @staticmethod
     def running_for():
@@ -24,11 +33,18 @@ class TempDetector:
 def detector_status():
     if request.method == "POST":
         if request.form["submit"] == "start":
-            TempDetector.running = True
-            TempDetector.started_running = time.time()
+            TempDetector.start()
             flash("Detector started.", "success")
         if request.form["submit"] == "stop":
             TempDetector.running = False
             flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*TempDetector.running_for_hms()), "success")
 
     return render_template("detector_status.html", status=TempDetector.status, current_seconds=int(TempDetector.running_for()), run_time="{0}h {1}m {2:.02f}s".format(*TempDetector.running_for_hms()), detector_running=TempDetector.running)
+
+@detector.route("/current_muons")
+def current_muons():
+    for i in range(0, int((TempDetector.running_for()-TempDetector.last_check_time)*100)):
+        if random.random() > 0.8:
+            TempDetector.total_muons += 1
+    TempDetector.last_check_time = TempDetector.running_for()
+    return jsonify(result=TempDetector.total_muons)

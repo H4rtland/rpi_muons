@@ -1,13 +1,18 @@
 {% extends "master.html" %}
 {% block title %}Detector status{% endblock %}
 {% block head %}
+    <script type=text/javascript src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/detector_status.js') }}"></script>
 {% endblock %}
 {% block body %}
     <p>Status: {{ status }}</p>
     {% if detector_running %}
         <p id="run_timer">Run time</p>
-        <script>detector_running_seconds = {{ current_seconds-1 }}</script>
+        <p id="current_muons">Current muons: </p>
+        <script>detector_running_seconds = {{ current_seconds }}</script>
         <script>countTimer();</script>
     {% endif %}
     <form method="post" action="{{ url_for("detector.detector_status") }}">
