@@ -1,8 +1,8 @@
 var timer = setInterval(countTimer, 1000);
 var detector_running_seconds = 0;
+var run_scripts = false;
 function countTimer() {
-    var elementExists = !!document.getElementById("run_timer");
-    if (elementExists == false) {
+    if (!run_scripts) {
         return;
     }
     var hour = Math.floor(detector_running_seconds /3600);
@@ -15,6 +15,9 @@ function countTimer() {
 $(document).ready(function() {
     updateMuons();
     function updateMuons() {
+        if (!run_scripts) {
+            return;
+        }
         setTimeout(updateMuons, 10000);
         $.getJSON($SCRIPT_ROOT + '/current_muons', function(data) {$("#current_muons").text("Current muons: " + data.result)});
     }

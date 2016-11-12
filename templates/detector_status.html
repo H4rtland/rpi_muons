@@ -10,6 +10,7 @@
 {% block body %}
     <p>Status: {{ status }}</p>
     {% if detector_running %}
+        <script>run_scripts = true;</script>
         <p id="run_timer">Run time</p>
         <p id="current_muons">Current muons: </p>
         <script>detector_running_seconds = {{ current_seconds }}</script>
