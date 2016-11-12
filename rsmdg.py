@@ -12,6 +12,9 @@ from result.views import result as result_views
 
 app = Flask(__name__)
 
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
 app.config.update(
     SECRET_KEY="verysecretkey",
 )
