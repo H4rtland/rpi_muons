@@ -1,9 +1,14 @@
 {% extends "master.html" %}
 {% block title %}Detector status{% endblock %}
+{% block head %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/detector_status.js') }}"></script>
+{% endblock %}
 {% block body %}
-    <p>{{ status }}</p>
+    <p>Status: {{ status }}</p>
     {% if detector_running %}
-        <p>Running for: {{ run_time }}</p>
+        <p id="run_timer">Run time</p>
+        <script>detector_running_seconds = {{ current_seconds-1 }}</script>
+        <script>countTimer();</script>
     {% endif %}
     <form method="post" action="{{ url_for("detector.detector_status") }}">
         {% if not detector_running %}

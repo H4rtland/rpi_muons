@@ -29,5 +29,6 @@ def detector_status():
             flash("Detector started.", "success")
         if request.form["submit"] == "stop":
             TempDetector.running = False
-            flash("Detector stopped.", "success")
-    return render_template("detector_status.html", status=TempDetector.status, run_time="{0}h {1}m {2:.02f}s".format(*TempDetector.running_for_hms()), detector_running=TempDetector.running)
+            flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*TempDetector.running_for_hms()), "success")
+
+    return render_template("detector_status.html", status=TempDetector.status, current_seconds=int(TempDetector.running_for()), run_time="{0}h {1}m {2:.02f}s".format(*TempDetector.running_for_hms()), detector_running=TempDetector.running)
