@@ -3,7 +3,9 @@ from collections import namedtuple
 import mathutils.geometry
 from mathutils import Vector
 
+
 Path = namedtuple("Path", ["xi", "yi", "zi", "xf", "yf", "zf"])
+
 
 def path_passes_through_plane(path, x, y, z, w, d, h, direction):
     line_start = Vector((path.xi, path.yi, path.zi))
@@ -21,15 +23,16 @@ def path_passes_through_plane(path, x, y, z, w, d, h, direction):
     if intersection is None:
         return False
     if direction.x == 0:
-        if not (intersection.x < x < intersection.x+w):
+        if not (intersection.x-0.01 <= x <= intersection.x+w+0.01):
             return False
     if direction.y == 0:
-        if not (intersection.y < y < intersection.y+d):
+        if not (intersection.y-0.01 <= y <= intersection.y+d+0.01):
             return False
     if direction.z == 0:
-        if not (intersection.z < z < intersection.z+h):
+        if not (intersection.z-0.01 <= z <= intersection.z+h+0.01):
             return False
     return True
+
 
 def path_passes_through_cube(path, x, y, z, w, d, h):
     near_corner = (x, y, z)
@@ -63,5 +66,26 @@ def path_passes_through_cube(path, x, y, z, w, d, h):
 
 
 if __name__ == "__main__":
-    path = Path(1, 1, 1, 0, 0, 0)
-    print(path_passes_through_cube(path, 0.45, 0.45, 0.45, 0.1, 0.1, 0.1))
+    #path = Path(1, 1, 1, 0, 0, 0)
+    #print(path_passes_through_cube(path, 0.45, 0.45, 0.45, 0.1, 0.1, 0.1))
+    failed_num = 0
+    for y in range(0, 10):
+        for x in range(0, 10):
+            p = Path(x/10, y/10, 1, 1-x/10, 1-y/10, 0)
+            if not path_passes_through_cube(p, 0.45, 0.45, 0.45, 0.1, 0.1, 0.1):
+                print("1FAILED", x/10, y/10, 1, 1-x/10, 1-y/10, 0)
+                failed_num += 1
+            p = Path(x/10, y/10, 0, 1-x/10, 1-y/10, 1)
+            if not path_passes_through_cube(p, 0.45, 0.45, 0.45, 0.1, 0.1, 0.1):
+                print("2FAILED", x/10, y/10, 0, 1-x/10, 1-y/10, 1)
+                failed_num += 1
+        for z in range(0, 10):
+            p = Path(0, y/10, z/10, 1, 1-y/10, 1-z/10)
+            if not path_passes_through_cube(p, 0.45, 0.45, 0.45, 0.1, 0.1, 0.1):
+                print("3FAILED", 0, y/10, z/10, 1, 1-y/10, 1-z/10)
+                failed_num += 1
+            p = Path(1, y/10, z/10, 0, 1-y/10, 1-z/10)
+            if not path_passes_through_cube(p, 0.45, 0.45, 0.45, 0.1, 0.1, 0.1):
+                print("4FAILED", 1, y/10, z/10, 0, 1-y/10, 1-z/10)
+                failed_num += 1
+    print(failed_num)

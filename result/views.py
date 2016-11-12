@@ -33,15 +33,20 @@ def example_result():
     # 100000 Request time: 729.9082427835476 without caching
     # 100000 Request time: 754.6030013966841 with caching
     # 100000 Request time: 76.17804744634259 with easy checks
-    while len(lines) < 2000:
+    while len(lines) < 200000:
         # xi, yi, zi = random.random(), random.random(), 1
         # xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
         xi, yi, zi = 0.02 + 0.04*random.randint(0, 24), 0.02 + 0.04*random.randint(0, 24), 1
-        xf, yf, zf = xi+(0.04*random.randint(0, 24)-0.5), yi+(0.04*random.randint(0, 24)-0.5), 0
+        #xf, yf, zf = 0.02 + 0.04*random.randint(0, 24), 0.02 + 0.04*random.randint(0, 24), 0
+        #xi, yi, zi = random.random(), random.random(), 1
+        #xf, yf, zf = xi+(random.random()-0.5)/2, yi+(random.random()-0.5)/2, 0
+        xf, yf, zf = xi+(0.04*random.randint(0, 16)-0.32), yi+(0.04*random.randint(0, 16)-0.32), 0
         if (0 < xf < 1) and (0 < yf < 1):
-            #p = Path(xi, yi, zi, xf, yf, zf)
-            #if path_passes_through_cube(p, 0.40, 0.40, 0.04, 0.2, 0.2, 0.2) and random.random() > 0.2:
-            #    continue
+            p = Path(xi, yi, zi, xf, yf, zf)
+            if path_passes_through_cube(p, 0.30, 0.40, 0.0, 0.2, 0.2, 0.2) and random.random() > 0.2:
+                continue
+            if path_passes_through_cube(p, 0.50, 0.40, 0.0, 0.2, 0.2, 0.2) and random.random() > 0.6:
+                continue
             lines.append(([xi, xf], [yi, yf], [zi, zf]))
             #xs += [xi, xf, None]
             #ys += [yi, yf, None]
@@ -173,12 +178,14 @@ def example_result():
     st = time.time()
     datas = []
     max_intersects = 0
-    resolution = 15
+    resolution = 25
+    print("Check width: {}".format(1/resolution))
     total_intersections = 0
     all_intersection_values = []
-    for _x in range(0, resolution):
+    at_z = 0.0
+    for _x in range(3, resolution-3):
         xs = []
-        for _y in range(0, resolution):
+        for _y in range(3, resolution-3):
             x = _x/resolution
             y = _y/resolution
             intersecting_events = 0
@@ -188,12 +195,12 @@ def example_result():
                 z_i, z_f = line[2][0], line[2][1]
                 d = 1/resolution
 
-                # Don't bother with exact collision detection for paths with couldn't possibly intersect box (~10x speed gain)
+                # Don't bother with exact collision detection for paths with couldn't possibly intersect box (~3x to ~10x speed gain)
                 if ((x_i < x and x_f < x) or (x_i > x+d and x_f > x+d) or (y_i < y and y_f < y) or (y_i > y+d and y_f > y+d)):
                     continue
 
                 p = Path(x_i, y_i, z_i, x_f, y_f, z_f)
-                if path_passes_through_cube(p, x, y, 0.5, d, d, d):
+                if path_passes_through_cube(p, x, y, at_z, d, d, d):
                     intersecting_events += 1
 
 
@@ -221,7 +228,7 @@ def example_result():
         )
     ]
     layout = go.Layout(
-        title='Path density at z=0.5',
+        title='Path density at z={}'.format(at_z),
         autosize=False,
         width=700,
         height=700,
@@ -231,6 +238,11 @@ def example_result():
             b=65,
             t=90
         ),
+        scene = dict(
+            zaxis = dict(
+                range=[0, max_intersects]
+            )
+        )
     )
     fig = go.Figure(data=data, layout=layout)
     html2 = plotly.offline.plot(fig, auto_open=False, output_type="div", show_link=False, image_width=500, filename="scatter_plot", validate=False)
