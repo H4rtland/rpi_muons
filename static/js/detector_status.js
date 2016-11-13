@@ -28,3 +28,9 @@ $("#current_muons").ready(function() {
         });
     }
 });
+
+/*$(document).ready(function() {
+    $(".alert").fadeTo(5000, 500).slideUp(500, function(){
+        $(this).remove();
+    });
+});*/
