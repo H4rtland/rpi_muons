@@ -1,14 +1,26 @@
-from flask import Blueprint, render_template, flash
+from flask import Blueprint, render_template, flash, request, jsonify
+from werkzeug.utils import secure_filename
 
 import random
 import time
+import os
+import os.path as op
 
 import plotly
 import plotly.graph_objs as go
 
 from detector.detector import Path, path_passes_through_cube
 
+from paths import RESULTS_FOLDER
+
 result = Blueprint("result", __name__)
+
+@result.route("/upload_result", methods=["GET", "POST"])
+def upload_result():
+    for file in request.files.values():
+        filename = secure_filename(file.filename)
+        file.save(op.join(RESULTS_FOLDER, filename))
+    return jsonify(success=True), 200
 
 @result.route("/result")
 def example_result():

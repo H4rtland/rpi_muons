@@ -5,7 +5,6 @@ from flask_nav import Nav
 from flask_nav.elements import Navbar, View, Subgroup, Text, Separator
 from flask_bootstrap import Bootstrap
 from flask_admin import Admin
-from werkzeug.utils import secure_filename
 
 import os
 import os.path as op
@@ -14,11 +13,6 @@ import os.path as op
 from detector.views import detector as detector_views
 from result.views import result as result_views
 
-APP_ROOT = op.dirname(op.abspath(__file__))
-RESULTS_FOLDER = op.join(APP_ROOT, "results")
-
-if not op.exists(RESULTS_FOLDER):
-    os.makedirs(RESULTS_FOLDER)
 
 app = Flask(__name__)
 
@@ -55,17 +49,6 @@ def nav_bar_renderer():
 @app.route('/')
 def index():
     return render_template("index.html")
-
-@app.route("/status")
-def status():
-    return jsonify(**{"STATUS":1, "CURRENT_COUNT":211575})
-
-@app.route("/upload_result", methods=["GET", "POST"])
-def upload_result():
-    for file in request.files.values():
-        filename = secure_filename(file.filename)
-        file.save(op.join(RESULTS_FOLDER, filename))
-    return jsonify(success=True), 200
 
 
 
