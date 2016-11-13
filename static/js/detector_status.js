@@ -12,13 +12,19 @@ function countTimer() {
     detector_running_seconds++;
 }
 
-$(document).ready(function() {
+$("#current_muons").ready(function() {
     updateMuons();
     function updateMuons() {
         if (!run_scripts) {
             return;
         }
         setTimeout(updateMuons, 10000);
-        $.getJSON($SCRIPT_ROOT + '/current_muons', function(data) {$("#current_muons").text("Current muons: " + data.result)});
+        $.getJSON($SCRIPT_ROOT + '/current_muons', function(data) {
+            if (data.reload) {
+                window.location.href = 'detector';
+            } else {
+                $("#current_muons").text("Current muons: " + data.result);
+            }
+        });
     }
 });

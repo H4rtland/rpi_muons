@@ -43,8 +43,11 @@ def detector_status():
 
 @detector.route("/current_muons")
 def current_muons():
-    for i in range(0, int((TempDetector.running_for()-TempDetector.last_check_time)*100)):
-        if random.random() > 0.8:
-            TempDetector.total_muons += 1
-    TempDetector.last_check_time = TempDetector.running_for()
-    return jsonify(result=TempDetector.total_muons)
+    if TempDetector.running:
+        for i in range(0, int((TempDetector.running_for()-TempDetector.last_check_time)*100)):
+            if random.random() > 0.8:
+                TempDetector.total_muons += 1
+        TempDetector.last_check_time = TempDetector.running_for()
+    else:
+        flash("Detector is no longer running.", "error")
+    return jsonify(result=TempDetector.total_muons, reload= not TempDetector.running)
