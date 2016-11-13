@@ -18,7 +18,7 @@
     {% endif %}
     <form method="post" action="{{ url_for("detector.detector_status") }}">
         {% if not detector_running %}
-            <button type="submit" class="btn btn-success" name="submit" value="start">Start</button>
+            <button type="submit" class="btn btn-primary" name="submit" value="start">Start</button>
         {% else %}
             <button type="submit" class="btn btn-danger" name="submit" value="stop">Stop</button>
         {% endif %}
