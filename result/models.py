@@ -30,9 +30,9 @@ class Result(db.Model):
     def save_plot(self, plot_name, contents):
         if not op.exists(self.cache_folder):
             os.makedirs(self.cache_folder)
-        with open(op.join(self.cache_folder, plot_name + ".html")) as cache_file:
+        with open(op.join(self.cache_folder, plot_name + ".html"), "w") as cache_file:
             cache_file.write(contents)
 
     @property
     def cache_folder(self):
-        return op.join(PLOT_CACHES_FOLDER, self.id)
+        return op.join(PLOT_CACHES_FOLDER, str(self.id))

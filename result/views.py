@@ -20,6 +20,7 @@ result = Blueprint("result", __name__)
 @result.route("/upload_result", methods=["GET", "POST"])
 def upload_result():
     """
+    Route to upload result file to database
     POST with requests.post("http://127.0.0.1:5000/upload_result", files={0:open("path/to/file", "r")})
     :return: HTTP response
     """

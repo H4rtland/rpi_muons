@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, request, jsonify
+from flask import Blueprint, render_template, flash, request, jsonify, redirect, url_for
 
 import time, random
 
@@ -39,6 +39,8 @@ def detector_status():
             TempDetector.running = False
             flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*TempDetector.running_for_hms()), "success")
 
+        # Don't want to repost form on a page refresh
+        return redirect(url_for("detector.detector_status"))
     return render_template("detector_status.html", status=TempDetector.status, current_seconds=int(TempDetector.running_for()), run_time="{0}h {1}m {2:.02f}s".format(*TempDetector.running_for_hms()), detector_running=TempDetector.running)
 
 @detector.route("/current_muons")
