@@ -21,9 +21,11 @@ result = Blueprint("result", __name__)
 def upload_result():
     """
     Route to upload result file to database
-    POST with requests.post("http://127.0.0.1:5000/upload_result", files={0:open("path/to/file", "r")})
+    POST with requests.post("http://127.0.0.1:5000/upload_result", files={"field_name":open("path/to/file", "r")})
     :return: HTTP response
     """
+    if len(request.files) == 0:
+        return jsonify(success=False), 400
     for file in request.files.values():
         filename = secure_filename(file.filename)
         file.save(op.join(RESULTS_FOLDER, filename))
