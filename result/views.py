@@ -11,15 +11,27 @@ import plotly.graph_objs as go
 
 from detector.detector import Path, path_passes_through_cube
 
-from paths import RESULTS_FOLDER
+from result.models import Result, ResultStatus
+
+from paths import RESULTS_FOLDER, db
 
 result = Blueprint("result", __name__)
 
 @result.route("/upload_result", methods=["GET", "POST"])
 def upload_result():
+    """
+    POST with requests.post("http://127.0.0.1:5000/upload_result", files={0:open("path/to/file", "r")})
+    :return: HTTP response
+    """
     for file in request.files.values():
         filename = secure_filename(file.filename)
         file.save(op.join(RESULTS_FOLDER, filename))
+
+        result = Result()
+        result.file = op.join(RESULTS_FOLDER, filename)
+        db.session.add(result)
+        db.session.commit()
+
     return jsonify(success=True), 200
 
 @result.route("/result")

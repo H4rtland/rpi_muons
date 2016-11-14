@@ -6,12 +6,14 @@ from flask_nav.elements import Navbar, View, Subgroup, Text, Separator
 from flask_bootstrap import Bootstrap
 from flask_admin import Admin
 
-import os
-import os.path as op
+from paths import db
 
 # Import blueprints
 from detector.views import detector as detector_views
 from result.views import result as result_views
+
+# Import models
+from result.models import Result
 
 
 app = Flask(__name__)
@@ -21,7 +23,11 @@ app.jinja_env.lstrip_blocks = True
 
 app.config.update(
     SECRET_KEY="verysecretkey",
+    SQLALCHEMY_DATABASE_URI='sqlite:////tmp/rsmdg.db',
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
 )
+
+db.init_app(app)
 
 Bootstrap(app)
 nav = Nav()
@@ -45,6 +51,9 @@ def nav_bar_renderer():
     navbar.render = lambda: html
     return navbar
 
+@app.before_first_request
+def before_first_request():
+    db.create_all()
 
 @app.route('/')
 def index():
