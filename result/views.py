@@ -15,7 +15,7 @@ from detector.detector import Path, path_passes_through_cube
 
 from result.models import Result, ResultStatus
 
-from paths import RESULTS_FOLDER, db
+from app import RESULTS_FOLDER, db
 
 result = Blueprint("result", __name__)
 

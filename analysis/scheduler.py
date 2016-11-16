@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from paths import app, db
+from app import app, db
 
 from analysis.analysis import Analysis
 

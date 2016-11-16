@@ -6,7 +6,7 @@ import os.path as op
 
 from sqlalchemy import Column, Integer, String, DateTime, Enum
 
-from paths import db, PLOT_CACHES_FOLDER
+from app import db, PLOT_CACHES_FOLDER
 
 class ResultStatus(enum.Enum):
     pending = "PENDING"

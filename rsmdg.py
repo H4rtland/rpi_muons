@@ -5,8 +5,8 @@ from flask_nav.elements import Navbar, View, Subgroup, Text, Separator
 from flask_bootstrap import Bootstrap
 from flask_admin import Admin
 
-import paths
-from paths import db, app
+import app
+from app import db, app
 
 from analysis import scheduler
 
