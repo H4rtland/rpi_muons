@@ -1,4 +1,3 @@
-from flask import Flask
 from flask import render_template, jsonify, request
 
 from flask_nav import Nav
@@ -6,7 +5,10 @@ from flask_nav.elements import Navbar, View, Subgroup, Text, Separator
 from flask_bootstrap import Bootstrap
 from flask_admin import Admin
 
-from paths import db
+import paths
+from paths import db, app
+
+from analysis import scheduler
 
 # Import blueprints
 from detector.views import detector as detector_views
@@ -15,8 +17,6 @@ from result.views import result as result_views
 # Import models
 from result.models import Result
 
-
-app = Flask(__name__)
 
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True

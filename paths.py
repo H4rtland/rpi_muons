@@ -1,3 +1,5 @@
+from flask import Flask
+
 import os
 import os.path as op
 
@@ -14,3 +16,5 @@ if not op.exists(PLOT_CACHES_FOLDER):
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+app = Flask(__name__)

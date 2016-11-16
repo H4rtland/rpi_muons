@@ -5,6 +5,8 @@ import random
 import time
 import os
 import os.path as op
+from collections import OrderedDict
+from operator import itemgetter
 
 import plotly
 import plotly.graph_objs as go
@@ -37,7 +39,24 @@ def upload_result():
 
     return jsonify(success=True), 200
 
-@result.route("/result")
+@result.route("/result/<int:result_id>")
+def result_page(result_id):
+    result = Result.query.get(result_id)
+
+    if result.status == ResultStatus.failed:
+        return result.exception
+
+    parameters = OrderedDict(sorted(result.parameters.items(), key=itemgetter(0)))
+
+    plots = []
+    plot_priority = ["path_track", "density_slice", "density_dist"]
+    for plot_name in plot_priority:
+        plot = result.get_plot(plot_name)
+        if not plot is None:
+            plots.append(plot)
+    return render_template("result.html", result=result, plots=plots, parameters=parameters)
+
+@result.route("/result_example")
 def example_result():
     """
     idea: cache plotly html files, offer "replot" on result page
