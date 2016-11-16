@@ -18,8 +18,9 @@ class Result(db.Model):
     id = Column(Integer, primary_key=True)
     status = Column(Enum(ResultStatus), default=ResultStatus.pending.name)
     creation_date = Column(DateTime, default=datetime.now)
-    file = Column(String(200))
+    file = Column(String)
     exception = Column(String)
+    analysis_parameters = Column(String, default="{}")
 
     def get_plot(self, plot_name):
         if op.exists(op.join(self.cache_folder, plot_name + ".html")):
@@ -36,3 +37,11 @@ class Result(db.Model):
     @property
     def cache_folder(self):
         return op.join(PLOT_CACHES_FOLDER, str(self.id))
+
+    @property
+    def parameters(self):
+        return ast.literal_eval(self.analysis_parameters)
+
+    @parameters.setter
+    def parameters(self, p):
+        self.analysis_parameters = str(p)
