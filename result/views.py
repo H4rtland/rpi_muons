@@ -44,7 +44,7 @@ def result_page(result_id):
     result = Result.query.get(result_id)
 
     if result.status == ResultStatus.failed:
-        return result.exception
+        return render_template("generic.html", title="Result {}".format(result_id), body="<h3>Result: {}</h3>Exception:<pre>{}</pre>".format(result_id, result.exception))
 
     parameters = OrderedDict(sorted(result.parameters.items(), key=itemgetter(0)))
 
@@ -79,14 +79,14 @@ def example_result():
     # 100000 Request time: 729.9082427835476 without caching
     # 100000 Request time: 754.6030013966841 with caching
     # 100000 Request time: 76.17804744634259 with easy checks
-    while len(lines) < 50000:
+    while len(lines) < 800000:
         # xi, yi, zi = random.random(), random.random(), 1
         # xf, yf, zf = xi+(random.random()-0.5), yi+(random.random()-0.5), 0
-        xi, yi, zi = 0.02 + 0.04*random.randint(0, 24), 0.02 + 0.04*random.randint(0, 24), 1
+        xi, yi, zi = round(0.05 + 0.1*random.randint(0, 9), 2), round(0.05 + 0.1*random.randint(0, 9), 2), 1
         #xf, yf, zf = 0.02 + 0.04*random.randint(0, 24), 0.02 + 0.04*random.randint(0, 24), 0
         #xi, yi, zi = random.random(), random.random(), 1
         #xf, yf, zf = xi+(random.random()-0.5)/2, yi+(random.random()-0.5)/2, 0
-        xf, yf, zf = xi+(0.04*random.randint(0, 16)-0.32), yi+(0.04*random.randint(0, 16)-0.32), 0
+        xf, yf, zf = round(xi+(0.1*random.randint(0, 6)-0.3), 2), round(yi+(0.1*random.randint(0, 6)-0.3), 2), 0
         if (0 < xf < 1) and (0 < yf < 1):
             p = Path(xi, yi, zi, xf, yf, zf)
             if path_passes_through_cube(p, 0.30, 0.40, 0.0, 0.2, 0.2, 0.2) and random.random() > 0.2:
@@ -116,7 +116,8 @@ def example_result():
         paths_shown += 1
     datas.append(
         go.Scatter3d(x=xs, y=ys, z=zs,
-                        hoverinfo="none", connectgaps=False,
+                        hoverinfo="none",
+                        connectgaps=False,
                         marker=dict(
                             size=4,
                             color=zs,
@@ -125,7 +126,7 @@ def example_result():
                         line=dict(
                             color=col,
                             width=1
-                        )
+                        ),
                      )
     )
 
@@ -181,19 +182,22 @@ def example_result():
                 gridcolor='rgb(255, 255, 255)',
                 zerolinecolor='rgb(255, 255, 255)',
                 showbackground=True,
-                backgroundcolor='rgb(230, 230,230)'
+                backgroundcolor='rgb(230, 230,230)',
+                range=[0, 1],
             ),
             yaxis=dict(
                 gridcolor='rgb(255, 255, 255)',
                 zerolinecolor='rgb(255, 255, 255)',
                 showbackground=True,
-                backgroundcolor='rgb(230, 230,230)'
+                backgroundcolor='rgb(230, 230,230)',
+                range=[0, 1],
             ),
             zaxis=dict(
                 gridcolor='rgb(255, 255, 255)',
                 zerolinecolor='rgb(255, 255, 255)',
                 showbackground=True,
-                backgroundcolor='rgb(230, 230,230)'
+                backgroundcolor='rgb(230, 230,230)',
+                range=[-0.05, 1.05],
             ),
             camera=dict(
                 up=dict(
@@ -224,14 +228,14 @@ def example_result():
     st = time.time()
     datas = []
     max_intersects = 0
-    resolution = 25
+    resolution = 10
     print("Check width: {}".format(1/resolution))
     total_intersections = 0
     all_intersection_values = []
     at_z = 0.0
-    for _x in range(3, resolution-3):
+    for _x in range(0, resolution):
         xs = []
-        for _y in range(3, resolution-3):
+        for _y in range(0, resolution):
             x = _x/resolution
             y = _y/resolution
             intersecting_events = 0
@@ -239,6 +243,7 @@ def example_result():
                 x_i, x_f = line[0][0], line[0][1]
                 y_i, y_f = line[1][0], line[1][1]
                 z_i, z_f = line[2][0], line[2][1]
+                if not (x_i == x_f and y_i == y_f): continue
                 d = 1/resolution
 
                 # Don't bother with exact collision detection for paths with couldn't possibly intersect box (~3x to ~10x speed gain)
