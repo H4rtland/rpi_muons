@@ -1,26 +1,45 @@
 import inspect
 import time
 import traceback
+import logging
 
 import plotly
 import plotly.graph_objs as go
 
+from app import app
 from result.models import Result, ResultStatus
+
+
+class Paths:
+    def __init__(self, result):
+        self.paths = []
+        with open(result.file, "r") as data_file:
+            for line in data_file.readlines():
+                points = list(map(float, line.replace("\n", "").split("\t")))
+                self.paths.append(([points[0], points[3]], [points[1], points[4]], [points[2], points[5]]))
+
+    @property
+    def vertical_paths(self):
+        for path in self.paths:
+            if path[0][0] == path[0][1] and path[1][0] == path[1][1]:
+                yield path
 
 class Analysis:
     @staticmethod
     def tick(db):
         new_result = Result.query.filter_by(status=ResultStatus.pending).first()
         if not new_result is None:
-            print("Parsing new result {}".format(new_result.id))
+            app.logger.log(logging.INFO, "Parsing new result {}".format(new_result.id))
             new_result.status = ResultStatus.processing.name
             db.session.commit()
             try:
                 Analysis.analyse(new_result, **new_result.parameters)
                 new_result.status = ResultStatus.complete.name
+                app.logger.log(logging.INFO, "Finished parsing result {}".format(new_result.id))
             except Exception as exc:
                 new_result.status = ResultStatus.failed.name
                 new_result.exception = "\n".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+                app.logger.log(logging.WARNING, "Parsing result {} failed: {}".format(new_result.id, exc))
             finally:
                 db.session.commit()
 
@@ -32,11 +51,7 @@ class Analysis:
         kwargs = {name:local[name] for name in argspec.args[-len(argspec.defaults):]}
         result.parameters = kwargs
 
-        paths = []
-        with open(result.file, "r") as data_file:
-            for line in data_file.readlines():
-                points = list(map(float, line.replace("\n", "").split("\t")))
-                paths.append(([points[0], points[3]], [points[1], points[4]], [points[2], points[5]]))
+        paths = Paths(result)
 
 
         datas = []
@@ -45,7 +60,7 @@ class Analysis:
         ys = []
         zs = []
         paths_shown = 0
-        for line in paths:
+        for line in paths.paths:
             #if random.random() > (400/len(lines)):
             #    continue
             xs += line[0] + [None,]

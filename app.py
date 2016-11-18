@@ -1,5 +1,6 @@
 import os
 import os.path as op
+import logging
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -18,3 +19,11 @@ if not op.exists(PLOT_CACHES_FOLDER):
 db = SQLAlchemy()
 
 app = Flask(__name__)
+
+handler = logging.FileHandler(op.join(APP_ROOT, "rsmdg.log"))
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s %(levelname)s: %(message)s '
+    '[in %(pathname)s:%(lineno)d]'
+))
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)

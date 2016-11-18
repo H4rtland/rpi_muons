@@ -3,8 +3,11 @@ from flask import render_template, jsonify, request
 from flask_bootstrap import Bootstrap
 from flask_admin import Admin
 
+import os
+import os.path as op
+
 import app
-from app import db, app
+from app import db, app, APP_ROOT
 
 from analysis import scheduler
 import navbar
@@ -43,6 +46,11 @@ def before_first_request():
 @app.route('/')
 def index():
     return render_template("index.html")
+
+@app.route("/log")
+def log():
+    with open(op.join(APP_ROOT, "rsmdg.log")) as logfile:
+        return render_template("generic.html", title="Log", body="<h3>Log file</h3><pre>{}</pre>".format(logfile.read()))
 
 
 
