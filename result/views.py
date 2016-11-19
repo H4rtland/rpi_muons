@@ -104,6 +104,14 @@ def download_data_file(result_id):
         return "File not found"
     return send_from_directory(directory=RESULTS_FOLDER, filename=result.filename, attachment_filename="result-{}-datafile.txt".format(result_id), as_attachment=True)
 
+@result.route("/check_progress/<int:result_id>")
+def check_progress(result_id):
+    state = request.args.get("current_status", "complete")
+    result = Result.query.get(result_id)
+    reload = result.status.name != state
+    return jsonify(dict(reload=reload))
+
+
 @result.route("/result_example")
 def example_result():
     """

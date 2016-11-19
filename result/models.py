@@ -61,3 +61,7 @@ class Result(db.Model):
     @property
     def complete(self):
         return self.status == ResultStatus.complete
+
+    @property
+    def in_progress(self):
+        return self.status in (ResultStatus.pending, ResultStatus.processing)

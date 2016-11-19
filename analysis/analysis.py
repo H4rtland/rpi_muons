@@ -87,11 +87,17 @@ class Analysis:
         )
 
         layout = dict(
-            width=700,
-            height=700,
+            width=550,
+            height=550,
             autosize=False,
             title='muon paths',
             showlegend = False,
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=30,
+            ),
             scene=dict(
                 xaxis=dict(
                     gridcolor='rgb(255, 255, 255)',

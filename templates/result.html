@@ -1,5 +1,15 @@
 {% extends "master.html" %}
 {% block title %}Result {{ result.id }}{% endblock %}
+{% block head %}
+    <script type=text/javascript src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/result.js') }}"></script>
+    <script>run_scripts = {{ result.in_progress|tojson }};</script>
+    <script>current_status = {{ result.status.name|tojson }};</script>
+    <script>result_id = {{ result.id|tojson }};</script>
+{% endblock %}
 {% block body %}
     <div class="panel panel-default">
         <div class="panel-heading">
