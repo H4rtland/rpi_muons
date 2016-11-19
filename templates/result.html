@@ -1,32 +1,52 @@
 {% extends "master.html" %}
 {% block title %}Result {{ result.id }}{% endblock %}
 {% block body %}
-    <h3>Result: {{ result.id }}</h3>
-    <ul class="list-group">
-        <li class="list-group-item"><b>Status: </b>{{ result.status.value }}</li>
-        <li class="list-group-item"><b>Data file: </b>{{ result.file }} <a href="{{ url_for("result.download_data_file", result_id=result.id) }}"><span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span></a></li>
-        <li class="list-group-item"><b>Creation date: </b>{{ result.creation_date }}</li>
-    </ul>
-
-    <h3>Analysis parameters</h3>
-    <form class="form-horizontal">
-        {% for name, value in parameters.items() %}
-            <div class="form-group">
-                <label class="control-label col-sm-2" for="{{ name }}">{{ name }}</label>
-                <div class="col-sm-10">
-                  <input type="text" class="form-control" id="{{ name }}" placeholder="{{ value }}">
-                </div>
-            </div>
-        {% endfor %}
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-default">Reanalyse</button>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Result: {{ result.id }}</h3>
         </div>
-    </form>
+        <ul class="list-group">
+            <li class="list-group-item"><b>Status: </b>{{ result.status.value }}</li>
+            <li class="list-group-item"><b>Data file: </b>{{ result.file }}
+                <a href="{{ url_for("result.download_data_file", result_id=result.id) }}">
+                    <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
+                </a>
+            </li>
+            <li class="list-group-item"><b>Creation date: </b>{{ result.creation_date }}</li>
+        </ul>
+    </div>
 
-    <h3>Plots</h3>
-    {% for plot in plots %}
-        {{ plot|safe }}
-    {% endfor %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Analysis parameters</h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal">
+                {% for name, value in parameters.items() %}
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="{{ name }}">{{ name }}</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="{{ name }}" placeholder="{{ value }}">
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <button type="submit" class="btn btn-default">Reanalyse</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Plots</h3>
+        </div>
+        <div class="panel-body">
+            {% for plot in plots %}
+                {{ plot|safe }}
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
