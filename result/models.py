@@ -34,6 +34,10 @@ class Result(db.Model):
         with open(op.join(self.cache_folder, plot_name + ".html"), "w") as cache_file:
             cache_file.write(contents)
 
+    def clear_plots(self):
+        for filename in os.listdir(self.cache_folder):
+            os.unlink(op.join(self.cache_folder, filename))
+
     @property
     def cache_folder(self):
         return op.join(PLOT_CACHES_FOLDER, str(self.id))
@@ -49,3 +53,11 @@ class Result(db.Model):
     @property
     def filename(self):
         return op.basename(self.file)
+
+    @property
+    def failed(self):
+        return self.status == ResultStatus.failed
+
+    @property
+    def complete(self):
+        return self.status == ResultStatus.complete

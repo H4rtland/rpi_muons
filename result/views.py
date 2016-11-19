@@ -45,9 +45,6 @@ def upload_result():
 def result_page(result_id):
     result = Result.query.get(result_id)
 
-    if result.status == ResultStatus.failed:
-        return render_template("generic.html", title="Result {}".format(result_id), body="<h3>Result: {}</h3>Exception:<pre>{}</pre>".format(result_id, result.exception))
-
     parameters = result.parameters
     argspec = inspect.getfullargspec(Analysis.analyse)
     kwargs = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
@@ -74,15 +71,18 @@ def result_page(result_id):
 
     plots = []
     plot_priority = ["path_track", "density_slice", "density_dist"]
-    for plot_name in plot_priority:
-        plot = result.get_plot(plot_name)
-        if not plot is None:
-            plots.append(plot)
+    if not result.failed:
+        for plot_name in plot_priority:
+            plot = result.get_plot(plot_name)
+            if not plot is None:
+                plots.append(plot)
+
     return render_template("result.html", result=result, plots=plots, parameters=parameters, parameter_type=parameter_type, label_type=label_type)
 
 @result.route("/reanalyse/<int:result_id>", methods=["GET", "POST"])
 def reanalyse(result_id):
     result = Result.query.get(result_id)
+    result.clear_plots()
     argspec = inspect.getfullargspec(Analysis.analyse)
     kwargs = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
     parameters = result.parameters
