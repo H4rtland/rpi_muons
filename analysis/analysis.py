@@ -2,6 +2,7 @@ import inspect
 import time
 import traceback
 import logging
+import random
 
 import plotly
 import plotly.graph_objs as go
@@ -44,7 +45,7 @@ class Analysis:
                 db.session.commit()
 
     @staticmethod
-    def analyse(result, para1=1, para2=2, **kwargs):
+    def analyse(result, show_muon_paths=500, **kwargs):
         # Cache kwargs parameters
         local = locals().copy()
         argspec = inspect.getfullargspec(Analysis.analyse)
@@ -53,16 +54,19 @@ class Analysis:
 
         paths = Paths(result)
 
-
         datas = []
         col = '#1f77b4'
         xs = []
         ys = []
         zs = []
         paths_shown = 0
+        if show_muon_paths < len(paths.paths):
+            to_show = random.sample(paths.paths, show_muon_paths)
+        else:
+            to_show = paths.paths
         for line in paths.paths:
-            #if random.random() > (400/len(lines)):
-            #    continue
+            if not line in to_show:
+                continue
             xs += line[0] + [None,]
             ys += line[1] + [None,]
             zs += line[2] + [None,]

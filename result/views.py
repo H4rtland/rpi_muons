@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, request, jsonify, send_from_directory, redirect
+from flask import Blueprint, render_template, flash, request, jsonify, send_from_directory, redirect, url_for
 from werkzeug.utils import secure_filename
 
 import random
@@ -7,6 +7,7 @@ import os
 import os.path as op
 from collections import OrderedDict
 from operator import itemgetter
+import inspect
 
 import plotly
 import plotly.graph_objs as go
@@ -14,6 +15,7 @@ import plotly.graph_objs as go
 from detector.detector import Path, path_passes_through_cube
 
 from result.models import Result, ResultStatus
+from analysis.analysis import Analysis
 
 from app import RESULTS_FOLDER, db
 
@@ -46,7 +48,29 @@ def result_page(result_id):
     if result.status == ResultStatus.failed:
         return render_template("generic.html", title="Result {}".format(result_id), body="<h3>Result: {}</h3>Exception:<pre>{}</pre>".format(result_id, result.exception))
 
-    parameters = OrderedDict(sorted(result.parameters.items(), key=itemgetter(0)))
+    parameters = result.parameters
+    argspec = inspect.getfullargspec(Analysis.analyse)
+    kwargs = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
+    for name, value in kwargs.items():
+        if name not in parameters:
+            parameters[name] = value
+
+    # Remove old parameters
+    for name in list(parameters.keys()):
+        if name not in kwargs:
+            del parameters[name]
+
+    parameters = OrderedDict(sorted(parameters.items(), key=itemgetter(0)))
+
+    def parameter_type(parameter):
+        if type(parameters[parameter]) is bool:
+            return "checkbox"
+        return "text"
+
+    label_type = {ResultStatus.pending:"info",
+                  ResultStatus.processing:"warning",
+                  ResultStatus.complete:"success",
+                  ResultStatus.failed:"danger",}[result.status]
 
     plots = []
     plot_priority = ["path_track", "density_slice", "density_dist"]
@@ -54,7 +78,24 @@ def result_page(result_id):
         plot = result.get_plot(plot_name)
         if not plot is None:
             plots.append(plot)
-    return render_template("result.html", result=result, plots=plots, parameters=parameters)
+    return render_template("result.html", result=result, plots=plots, parameters=parameters, parameter_type=parameter_type, label_type=label_type)
+
+@result.route("/reanalyse/<int:result_id>", methods=["GET", "POST"])
+def reanalyse(result_id):
+    result = Result.query.get(result_id)
+    argspec = inspect.getfullargspec(Analysis.analyse)
+    kwargs = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
+    parameters = result.parameters
+    for name, value in request.form.items():
+        if len(value) > 0:
+            if name in kwargs:
+                parameters[name] = type(kwargs[name])(value)
+
+
+    result.parameters = parameters
+    result.status = ResultStatus.pending
+    db.session.commit()
+    return redirect(url_for("result.result_page", result_id=result_id))
 
 @result.route("/download_data_file/<int:result_id>")
 def download_data_file(result_id):
