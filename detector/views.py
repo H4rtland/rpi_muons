@@ -1,6 +1,10 @@
 from flask import Blueprint, render_template, flash, request, jsonify, redirect, url_for
 
 import time, random
+import requests
+import io
+import tempfile
+import os
 
 detector = Blueprint("detector", __name__)
 
@@ -29,6 +33,22 @@ class TempDetector:
         m, s = divmod(m, 60)
         return (int(h), int(m), s)
 
+
+def generate_pretend_file(muons):
+    file = tempfile.NamedTemporaryFile(delete=False)
+    filename = file.name
+    file.close()
+    print(filename)
+    with open(filename, "w") as file:
+        for i in range(0, muons):
+            xi, yi, zi = round(0.05 + 0.1*random.randint(0, 9), 2), round(0.05 + 0.1*random.randint(0, 9), 2), 1
+            while True:
+                xf, yf, zf = round(xi+(0.1*random.randint(0, 6)-0.3), 2), round(yi+(0.1*random.randint(0, 6)-0.3), 2), 0
+                if 0 < xf < 1 and 0 < yf < 1:
+                    break
+            file.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(xi, yi, zi, xf, yf, zf))
+    return open(filename, "r")
+
 @detector.route("/detector", methods=["GET", "POST"])
 def detector_status():
     if request.method == "POST":
@@ -38,6 +58,14 @@ def detector_status():
         if request.form["submit"] == "stop":
             TempDetector.running = False
             flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*TempDetector.running_for_hms()), "success")
+
+            with generate_pretend_file(TempDetector.total_muons) as file:
+                req = requests.post("http://127.0.0.1:5000/upload_result", files={"name":file})
+                if req.ok:
+                    flash("File uploaded", "success")
+                else:
+                    flash("File not uploaded", "error")
+            #os.unlink(filename)
 
         # Don't want to repost form on a page refresh
         return redirect(url_for("detector.detector_status"))

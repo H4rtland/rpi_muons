@@ -45,3 +45,7 @@ class Result(db.Model):
     @parameters.setter
     def parameters(self, p):
         self.analysis_parameters = str(p)
+
+    @property
+    def filename(self):
+        return op.basename(self.file)

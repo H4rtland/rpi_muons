@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, request, jsonify
+from flask import Blueprint, render_template, flash, request, jsonify, send_from_directory, redirect
 from werkzeug.utils import secure_filename
 
 import random
@@ -55,6 +55,13 @@ def result_page(result_id):
         if not plot is None:
             plots.append(plot)
     return render_template("result.html", result=result, plots=plots, parameters=parameters)
+
+@result.route("/download_data_file/<int:result_id>")
+def download_data_file(result_id):
+    result = Result.query.get(result_id)
+    if result is None:
+        return "File not found"
+    return send_from_directory(directory=RESULTS_FOLDER, filename=result.filename, attachment_filename="result-{}-datafile.txt".format(result_id), as_attachment=True)
 
 @result.route("/result_example")
 def example_result():
