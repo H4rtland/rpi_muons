@@ -33,6 +33,7 @@ class Analysis:
         if not new_result is None:
             app.logger.log(logging.INFO, "Parsing new result {}".format(new_result.id))
             new_result.status = ResultStatus.processing.name
+            new_result.exception = ""
             db.session.commit()
             try:
                 Analysis.analyse(new_result, **new_result.parameters)
