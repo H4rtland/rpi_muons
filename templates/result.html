@@ -37,9 +37,9 @@
                         <label class="control-label col-sm-2" for="{{ name }}">{{ name }}</label>
                         <div class="col-sm-3">
                             {% if parameter_type(name) == "checkbox" %}
-                                <input type="{{ parameter_type(name) }}" class="custom-control-input" id="{{ name }}" name="{{ name }}" style="height: 27px;" {% if value %}checked{% endif %}>
+                                <input type="{{ parameter_type(name) }}" class="custom-control-input" id="{{ name }}" name="{{ name }}" style="height: 27px;" {% if value %}checked{% endif %} {%if result.in_progress %}disabled{% endif %}>
                             {% else %}
-                                <input type="{{ parameter_type(name) }}" class="form-control" id="{{ name }}" name="{{ name }}" placeholder="{{ value }}">
+                                <input type="{{ parameter_type(name) }}" class="form-control" id="{{ name }}" name="{{ name }}" placeholder="{{ value }}" {%if result.in_progress %}disabled{% endif %}>
                             {% endif %}
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                 {% if result.complete or result.failed %}
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
-                          <button type="submit" class="btn btn-primary">Reanalyse</button>
+                          <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-repeat"></span> Reanalyse</button>
                         </div>
                     </div>
                 {% endif %}
