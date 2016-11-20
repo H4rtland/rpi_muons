@@ -25,6 +25,7 @@ class Paths:
             if path[0][0] == path[0][1] and path[1][0] == path[1][1]:
                 yield path
 
+
 class Analysis:
     @staticmethod
     def tick(db):
@@ -40,17 +41,20 @@ class Analysis:
             except Exception as exc:
                 new_result.status = ResultStatus.failed.name
                 new_result.exception = "\n".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
-                app.logger.log(logging.WARNING, "Parsing result {} failed: {}".format(new_result.id, exc))
+                app.logger.log(logging.WARNING,
+                               "Parsing result {} failed: {}: {}".format(new_result.id, exc.__class__.__name__, exc))
             finally:
                 db.session.commit()
 
     @staticmethod
-    def analyse(result, show_muon_paths=500, **kwargs):
+    def analyse(result, shown_muon_paths=500, **kwargs):
         # Cache kwargs parameters
         local = locals().copy()
         argspec = inspect.getfullargspec(Analysis.analyse)
         kwargs = {name:local[name] for name in argspec.args[-len(argspec.defaults):]}
         result.parameters = kwargs
+
+        assert shown_muon_paths >= 0, "shown_muon_paths can't be negative"
 
         paths = Paths(result)
 
@@ -60,8 +64,8 @@ class Analysis:
         ys = []
         zs = []
         paths_shown = 0
-        if show_muon_paths < len(paths.paths):
-            to_show = random.sample(paths.paths, show_muon_paths)
+        if shown_muon_paths < len(paths.paths):
+            to_show = random.sample(paths.paths, shown_muon_paths)
         else:
             to_show = paths.paths
         for line in paths.paths:
