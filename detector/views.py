@@ -63,6 +63,7 @@ def detector_status():
                 req = requests.post("http://127.0.0.1:5000/upload_result", files={"name":file})
                 if req.ok:
                     flash("File uploaded", "success")
+                    return redirect(url_for("result.result_page", result_id=req.json()["result_id"]))
                 else:
                     flash("File not uploaded", "error")
             #os.unlink(filename)

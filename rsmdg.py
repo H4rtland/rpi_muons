@@ -42,6 +42,7 @@ app.register_blueprint(result_views)
 @app.before_first_request
 def before_first_request():
     db.create_all()
+    db.session().commit()
 
 @app.route('/')
 def index():

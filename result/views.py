@@ -39,7 +39,7 @@ def upload_result():
         db.session.add(result)
         db.session.commit()
 
-    return jsonify(success=True), 200
+    return jsonify(success=True, result_id=result.id), 200
 
 @result.route("/result/<int:result_id>")
 def result_page(result_id):
