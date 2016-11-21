@@ -12,6 +12,7 @@ def nav_bar_renderer():
     items.append(View("Home", "index"))
     items.append(View("Detector", "detector.detector_status"))
     items.append(View("Result", "result.example_result"))
+    items.append(View("Log", "log"))
     navbar = Navbar("rsmdg", *items)
     html = navbar.render()
     html = html.replace("navbar navbar-default", "navbar navbar-inverse navbar-fixed-top")
