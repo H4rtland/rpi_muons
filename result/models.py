@@ -55,6 +55,10 @@ class Result(db.Model):
         return op.basename(self.file)
 
     @property
+    def filesize(self):
+        return os.path.getsize(self.file)
+
+    @property
     def failed(self):
         return self.status == ResultStatus.failed
 

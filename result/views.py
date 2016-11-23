@@ -43,6 +43,9 @@ def upload_result():
 
 @result.route("/result/<int:result_id>")
 def result_page(result_id):
+    """
+    todo: comment on individual results
+    """
     result = Result.query.get(result_id)
 
     parameters = result.parameters
