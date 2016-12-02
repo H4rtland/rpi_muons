@@ -29,7 +29,9 @@
             {% else %}
                 <li class="list-group-item"><b>Data file no longer exists</b></li>
             {% endif %}
-            <li class="list-group-item"><b>Creation date: </b>{{ result.creation_date }}</li>
+            <li class="list-group-item"><b>Detector run duration: </b>{{ result.detector_run_time_hms }}</li>
+            <li class="list-group-item"><b>Database entry creation date: </b>{{ result.creation_date }}</li>
+
         </ul>
     </div>
 

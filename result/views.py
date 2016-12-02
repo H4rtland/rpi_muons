@@ -8,6 +8,8 @@ import os.path as op
 from collections import OrderedDict
 from operator import itemgetter
 import inspect
+import json
+from datetime import datetime
 
 import plotly
 import plotly.graph_objs as go
@@ -30,14 +32,19 @@ def upload_result():
     """
     if len(request.files) == 0:
         return jsonify(success=False), 400
-    for file in request.files.values():
-        filename = secure_filename(file.filename)
-        file.save(op.join(RESULTS_FOLDER, filename))
 
-        result = Result()
-        result.file = op.join(RESULTS_FOLDER, filename)
-        db.session.add(result)
-        db.session.commit()
+    file = next(request.files.values())
+    filename = secure_filename(file.filename)
+    file.save(op.join(RESULTS_FOLDER, filename))
+
+    result = Result()
+    result.file = op.join(RESULTS_FOLDER, filename)
+
+    result.detector_start_time = datetime.fromtimestamp(float(request.form["detector_start_time"]))
+    result.detector_end_time = datetime.fromtimestamp(float(request.form["detector_end_time"]))
+
+    db.session.add(result)
+    db.session.commit()
 
     return jsonify(success=True, result_id=result.id), 200
 

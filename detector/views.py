@@ -5,6 +5,7 @@ import requests
 import io
 import tempfile
 import os
+from datetime import datetime
 
 detector = Blueprint("detector", __name__)
 
@@ -60,7 +61,9 @@ def detector_status():
             flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*TempDetector.running_for_hms()), "success")
 
             with generate_pretend_file(TempDetector.total_muons) as file:
-                req = requests.post("http://127.0.0.1:5000/upload_result", files={"name":file})
+                data = {"detector_start_time":TempDetector.started_running,
+                        "detector_end_time":time.time()}
+                req = requests.post("http://127.0.0.1:5000/upload_result", files={"name":file}, data=data)
                 if req.ok:
                     flash("File uploaded", "success")
                     return redirect(url_for("result.result_page", result_id=req.json()["result_id"]))

@@ -25,7 +25,7 @@ app.jinja_env.lstrip_blocks = True
 
 app.config.update(
     SECRET_KEY="verysecretkey",
-    SQLALCHEMY_DATABASE_URI='sqlite:////tmp/rsmdg.db',
+    SQLALCHEMY_DATABASE_URI='sqlite:///muon_results.db',
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
 )
 

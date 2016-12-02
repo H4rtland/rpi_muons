@@ -21,6 +21,8 @@ class Result(db.Model):
     file = Column(String)
     exception = Column(String)
     analysis_parameters = Column(String, default="{}")
+    detector_start_time = Column(DateTime)
+    detector_end_time = Column(DateTime)
 
     def get_plot(self, plot_name):
         if op.exists(op.join(self.cache_folder, plot_name + ".html")):
@@ -84,3 +86,11 @@ class Result(db.Model):
     @property
     def simple_creation_date(self):
         return self.creation_date.strftime("%Y-%m-%d %H:%M:%S")
+
+    @property
+    def detector_run_time_hms(self):
+        dt = self.detector_end_time - self.detector_start_time
+        seconds = dt.seconds
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        return "{}h {}m {}s".format(hours, minutes, seconds)

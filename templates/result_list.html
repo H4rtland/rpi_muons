@@ -26,7 +26,7 @@
             <tr>
                 <th style="font-weight: normal;">Result ID</th>
                 <th style="font-weight: normal;">Status</th>
-                <th style="font-weight: normal;">Creation Date</th>
+                <th style="font-weight: normal;">Run duration</th>
                 <th style="font-weight: normal;">File</th>
             </tr>
             </thead>
@@ -35,7 +35,7 @@
                 <tr>
                     <td><a href="{{ url_for('result.result_page', result_id=result.id) }}">{{ result.id }}</a></td>
                     <td><span class="label label-{{ result.label_type }}">{{ result.status.value }}</span></td>
-                    <td>{{ result.simple_creation_date }}</td>
+                    <td>{{ result.detector_run_time_hms }}</td>
                     <td>
                         {{ result.file }}
                         <a href="{{ url_for("result.download_data_file", result_id=result.id) }}">
