@@ -55,6 +55,10 @@ class Result(db.Model):
         return op.basename(self.file)
 
     @property
+    def file_exists(self):
+        return op.exists(self.file)
+
+    @property
     def filesize(self):
         return os.path.getsize(self.file)
 
@@ -69,3 +73,14 @@ class Result(db.Model):
     @property
     def in_progress(self):
         return self.status in (ResultStatus.pending, ResultStatus.processing)
+
+    @property
+    def label_type(self):
+        return {ResultStatus.pending:"info",
+                ResultStatus.processing:"warning",
+                ResultStatus.complete:"success",
+                ResultStatus.failed:"danger",}[self.status]
+
+    @property
+    def simple_creation_date(self):
+        return self.creation_date.strftime("%Y-%m-%d %H:%M:%S")

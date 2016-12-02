@@ -41,6 +41,11 @@ def upload_result():
 
     return jsonify(success=True, result_id=result.id), 200
 
+@result.route("/results")
+def result_list():
+    results = Result.query.all()[::-1]
+    return render_template("result_list.html", results=results)
+
 @result.route("/result/<int:result_id>")
 def result_page(result_id):
     """
@@ -67,10 +72,6 @@ def result_page(result_id):
             return "checkbox"
         return "text"
 
-    label_type = {ResultStatus.pending:"info",
-                  ResultStatus.processing:"warning",
-                  ResultStatus.complete:"success",
-                  ResultStatus.failed:"danger",}[result.status]
 
     plots = []
     plot_priority = ["path_track", "density_slice", "density_dist"]
@@ -80,7 +81,19 @@ def result_page(result_id):
             if not plot is None:
                 plots.append(plot)
 
-    return render_template("result.html", result=result, plots=plots, parameters=parameters, parameter_type=parameter_type, label_type=label_type)
+    return render_template("result.html", result=result, plots=plots, parameters=parameters, parameter_type=parameter_type)
+
+@result.route("/jump_to_result", methods=["GET", "POST"])
+def jump_to_result():
+    result_id = request.form["jump_to_id"]
+    if not result_id.isdigit():
+        flash("Could not find result with that ID", "error")
+        return redirect(url_for("result.result_list"))
+    result = Result.query.get(result_id)
+    if result is None:
+        flash("Could not find result with that ID", "error")
+        return redirect(url_for("result.result_list"))
+    return redirect(url_for("result.result_page", result_id=result.id))
 
 @result.route("/reanalyse/<int:result_id>", methods=["GET", "POST"])
 def reanalyse(result_id):
@@ -102,9 +115,16 @@ def reanalyse(result_id):
 
 @result.route("/download_data_file/<int:result_id>")
 def download_data_file(result_id):
+    for name in dir(request):
+        if not name.startswith("__"):
+            print(name, getattr(request, name))
     result = Result.query.get(result_id)
     if result is None:
-        return "File not found"
+        flash("Result {} does not exist".format(result_id), "error")
+        return redirect(request.referrer)
+    if not op.exists(result.file):
+        flash("Data file ({}) no longer exists on the server".format(result.file), "error")
+        return redirect(request.referrer)
     return send_from_directory(directory=RESULTS_FOLDER, filename=result.filename, attachment_filename="result-{}-datafile.txt".format(result_id), as_attachment=True)
 
 @result.route("/check_progress/<int:result_id>")
