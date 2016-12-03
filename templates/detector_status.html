@@ -8,19 +8,26 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/detector_status.js') }}"></script>
 {% endblock %}
 {% block body %}
-    <p>Status: {{ status }}</p>
-    {% if detector_running %}
-        <script>run_scripts = true;</script>
-        <p id="run_timer">Run time</p>
-        <p id="current_muons">Current muons: </p>
-        <script>detector_running_seconds = {{ current_seconds }}</script>
-        <script>countTimer();</script>
-    {% endif %}
-    <form method="post" action="{{ url_for("detector.detector_status") }}">
-        {% if not detector_running %}
-            <button type="submit" class="btn btn-primary" name="submit" value="start">Start</button>
-        {% else %}
-            <button type="submit" class="btn btn-danger" name="submit" value="stop">Stop</button>
-        {% endif %}
-    </form>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2 class="panel-title">Detector Status</h2>
+        </div>
+        <div class="panel-body">
+            <p>Status: {{ status }}</p>
+            {% if detector_running %}
+                <script>run_scripts = true;</script>
+                <p id="run_timer">Run time</p>
+                <p id="current_muons">Current muons: </p>
+                <script>detector_running_seconds = {{ current_seconds }}</script>
+                <script>countTimer();</script>
+            {% endif %}
+            <form method="post" action="{{ url_for("detector.detector_status") }}">
+                {% if not detector_running %}
+                    <button type="submit" class="btn btn-primary" name="submit" value="start">Start</button>
+                {% else %}
+                    <button type="submit" class="btn btn-danger" name="submit" value="stop">Stop</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 {% endblock %}
