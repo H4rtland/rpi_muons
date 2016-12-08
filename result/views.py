@@ -81,7 +81,7 @@ def result_page(result_id):
 
 
     plots = []
-    plot_priority = ["path_track", "density_slice", "density_dist"]
+    plot_priority = ["pulses_histogram", "path_track", "density_slice", "density_dist"]
     if not result.failed:
         for plot_name in plot_priority:
             plot = result.get_plot(plot_name)
@@ -106,7 +106,7 @@ def jump_to_result():
 def reanalyse(result_id):
     result = Result.query.get(result_id)
     result.clear_plots()
-    argspec = inspect.getfullargspec(Analysis.analyse)
+    argspec = inspect.getfullargspec(Analysis.active_analysis.analyse)
     kwargs = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
     parameters = result.parameters
     for name, value in request.form.items():
@@ -122,9 +122,9 @@ def reanalyse(result_id):
 
 @result.route("/download_data_file/<int:result_id>")
 def download_data_file(result_id):
-    for name in dir(request):
-        if not name.startswith("__"):
-            print(name, getattr(request, name))
+    # for name in dir(request):
+    #     if not name.startswith("__"):
+    #         print(name, getattr(request, name))
     result = Result.query.get(result_id)
     if result is None:
         flash("Result {} does not exist".format(result_id), "error")

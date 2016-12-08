@@ -1,13 +1,14 @@
 from collections import namedtuple
 
-import mathutils.geometry
-from mathutils import Vector
+# import mathutils.geometry
+# from mathutils import Vector
 
 
 Path = namedtuple("Path", ["xi", "yi", "zi", "xf", "yf", "zf"])
 
 
 def path_passes_through_plane(path, x, y, z, w, d, h, direction):
+    return False
     line_start = Vector((path.xi, path.yi, path.zi))
     line_end = Vector((path.xf, path.yf, path.zf))
 
@@ -35,6 +36,7 @@ def path_passes_through_plane(path, x, y, z, w, d, h, direction):
 
 
 def path_passes_through_cube(path, x, y, z, w, d, h):
+    return False
     near_corner = (x, y, z)
     far_corner = (x+w, y+d, z+h)
     anchor_points = (near_corner, near_corner, near_corner,
@@ -61,8 +63,8 @@ def path_passes_through_cube(path, x, y, z, w, d, h):
     # any returns true on the first true item in a generator comprehension
     # but evaluates all terms in a list comprehension before returning
     # this had no effect on performance but it's a nice thing to know
-    return any((path_passes_through_plane(path, *anchor_points[i], *dimensions[i], directions[i]) for i in range(0, len(anchor_points))))
-
+    # return any((path_passes_through_plane(path, *anchor_points[i], *dimensions[i], directions[i]) for i in range(0, len(anchor_points))))
+    return False
 
 
 if __name__ == "__main__":

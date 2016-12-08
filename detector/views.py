@@ -9,7 +9,9 @@ from datetime import datetime
 
 detector = Blueprint("detector", __name__)
 
-class TempDetector:
+from detector.rpi import LPD
+
+class TempDetector1:
     running = False
     started_running = time.time()
     status = "OK"
@@ -54,15 +56,14 @@ def generate_pretend_file(muons):
 def detector_status():
     if request.method == "POST":
         if request.form["submit"] == "start":
-            TempDetector.start()
-            flash("Detector started.", "success")
+            LPD.start()
+            flash("Light pulse detector started.", "success")
         if request.form["submit"] == "stop":
-            TempDetector.running = False
-            flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*TempDetector.running_for_hms()), "success")
+            flash("Detector stopped. Total run time was {0}h {1}m {2:.02f}s.".format(*LPD.running_for_hms()), "success")
 
-            with generate_pretend_file(TempDetector.total_muons) as file:
-                data = {"detector_start_time":TempDetector.started_running,
-                        "detector_end_time":time.time()}
+            with open(LPD.stop(), "r")  as file:
+                data = {"detector_start_time":LPD.start_time,
+                        "detector_end_time":time.perf_counter()}
                 req = requests.post("http://127.0.0.1:5000/upload_result", files={"name":file}, data=data)
                 if req.ok:
                     flash("File uploaded", "success")
@@ -73,15 +74,10 @@ def detector_status():
 
         # Don't want to repost form on a page refresh
         return redirect(url_for("detector.detector_status"))
-    return render_template("detector_status.html", status=TempDetector.status, current_seconds=int(TempDetector.running_for()), run_time="{0}h {1}m {2:.02f}s".format(*TempDetector.running_for_hms()), detector_running=TempDetector.running)
+    return render_template("detector_status.html", status="Running" if LPD.running else "Stopped", current_seconds=int(LPD.running_for()), run_time="{0}h {1}m {2:.02f}s".format(*LPD.running_for_hms()), detector_running=LPD.running)
 
 @detector.route("/current_muons")
 def current_muons():
-    if TempDetector.running:
-        for i in range(0, int((TempDetector.running_for()-TempDetector.last_check_time)*100)):
-            if random.random() > 0.8:
-                TempDetector.total_muons += 1
-        TempDetector.last_check_time = TempDetector.running_for()
-    else:
+    if not LPD.running:
         flash("Detector is no longer running.", "error")
-    return jsonify(result=TempDetector.total_muons, reload= not TempDetector.running)
+    return jsonify(result=LPD.pulses, reload=((not LPD.running) and LPD.stop_time < time.perf_counter()-2))

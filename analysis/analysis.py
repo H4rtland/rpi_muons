@@ -36,6 +36,7 @@ class Analysis:
         new_result = Result.query.filter_by(status=ResultStatus.pending).first()
         if not new_result is None:
             app.logger.log(logging.INFO, "Parsing new result {}".format(new_result.id))
+            app.logger.log(logging.INFO, "Parameters: {}".format(new_result.parameters))
             new_result.status = ResultStatus.processing.name
             new_result.exception = ""
             db.session.commit()
@@ -51,6 +52,54 @@ class Analysis:
             finally:
                 db.session.commit()
 
+class LightPulseAnalysis(Analysis):
+    @staticmethod
+    def analyse(result, histogram_nbins=25, **kwargs):
+        # Cache kwargs parameters
+        local = locals().copy()
+        argspec = inspect.getfullargspec(LightPulseAnalysis.analyse)
+        kwargs = {name:local[name] for name in argspec.args[-len(argspec.defaults):]}
+        result.parameters = kwargs
+
+        assert histogram_nbins > 0, "must have at least 1 histogram bin"
+
+        with open(result.file, "r") as data_file:
+            times = [float(t.strip()) for t in data_file.readlines()]
+        
+        data = [
+            go.Histogram(
+                x=times,
+                xbins = dict(
+                    start=0,
+                    end=max(times)+1,
+                    size=(max(times)/histogram_nbins),
+                ),
+                autobinx=False,
+            )
+        ]
+
+        print(times)
+        print("end", max(times))
+        print("size", max(times)/histogram_nbins)
+
+        layout = go.Layout(
+            title="Pulses histogram",
+            xaxis=dict(
+                range=[0, max(times)+1],
+                title="Time /s",
+            ),
+            yaxis=dict(
+                title="Pulses",
+            ),
+        )
+
+        fig = go.Figure(data=data, layout=layout)
+
+        html = plotly.offline.plot(fig, auto_open=False, output_type="div", show_link=False, image_width=500, filename="histogram", validate=False)
+
+        result.save_plot("pulses_histogram", html)
+        
+        
 
 class MuonTrackAnalysis(Analysis):
     @staticmethod

@@ -35,7 +35,7 @@ app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
 
 
-from analysis.analysis import Analysis, MuonTrackAnalysis
-Analysis.active_analysis = MuonTrackAnalysis
+from analysis.analysis import Analysis, MuonTrackAnalysis, LightPulseAnalysis
+Analysis.active_analysis = LightPulseAnalysis
 
 # todo: ideally would have choice of analysis type next to detector stop button and reanalyse button

@@ -18,12 +18,12 @@ $("#current_muons").ready(function() {
         if (!run_scripts) {
             return;
         }
-        setTimeout(updateMuons, 10000);
+        setTimeout(updateMuons, 500);
         $.getJSON($SCRIPT_ROOT + '/current_muons', function(data) {
             if (data.reload) {
                 window.location.href = 'detector';
             } else {
-                $("#current_muons").text("Current muons: " + data.result);
+                $("#current_muons").text("Current light pulses: " + data.result);
             }
         });
     }
