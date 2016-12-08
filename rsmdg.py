@@ -8,7 +8,7 @@ import os
 import os.path as op
 
 import app
-from app import db, app, APP_ROOT
+from app import db, app, APP_ROOT, ON_RPI
 
 from analysis import scheduler
 import navbar
@@ -19,6 +19,10 @@ from result.views import result as result_views
 
 # Import models
 from result.models import Result
+
+# Import raspberry pi detector code
+if ON_RPI:
+    import detector.rpi
 
 
 app.jinja_env.trim_blocks = True
