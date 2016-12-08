@@ -1,4 +1,4 @@
-# rsmdg
+# rpi_muons
 
 ### Requirements
 

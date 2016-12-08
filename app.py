@@ -26,7 +26,7 @@ db = SQLAlchemy()
 
 app = Flask(__name__)
 
-handler = logging.FileHandler(op.join(APP_ROOT, "rsmdg.log"))
+handler = logging.FileHandler(op.join(APP_ROOT, "rpi_muons.log"))
 handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s '
     '[in %(pathname)s:%(lineno)d]'

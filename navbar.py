@@ -13,7 +13,7 @@ def nav_bar_renderer():
     items.append(View("Detector", "detector.detector_status"))
     items.append(View("Results", "result.result_list"))
     items.append(View("Log", "log"))
-    navbar = Navbar("rsmdg", *items)
+    navbar = Navbar("rpi_muons", *items)
     html = navbar.render()
     html = html.replace("navbar navbar-default", "navbar navbar-inverse navbar-fixed-top")
     navbar.render = lambda: html

@@ -55,7 +55,7 @@ def index():
 
 @app.route("/log")
 def log():
-    with open(op.join(APP_ROOT, "rsmdg.log")) as logfile:
+    with open(op.join(APP_ROOT, "rpi_muons.log")) as logfile:
         log_text = flask.Markup.escape(logfile.read())
         return render_template("generic.html", title="Log", panel_title="Log file", body="<pre>{}</pre>".format(log_text))
 
