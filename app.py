@@ -9,17 +9,17 @@ APP_ROOT = op.dirname(op.abspath(__file__))
 RESULTS_FOLDER = op.join(APP_ROOT, "results")
 PLOT_CACHES_FOLDER = op.join(RESULTS_FOLDER, "plot_caches")
 
-ON_RPI = False
-if hasattr(os, "uname"):
-    if os.uname()[4][:3] == "arm":
-        # probably a pi
-        ON_RPI = True
-
 if not op.exists(RESULTS_FOLDER):
     os.makedirs(RESULTS_FOLDER)
 
 if not op.exists(PLOT_CACHES_FOLDER):
     os.makedirs(PLOT_CACHES_FOLDER)
+
+ON_RPI = False
+if hasattr(os, "uname"):
+    if os.uname()[4][:3] == "arm":
+        # probably a pi
+        ON_RPI = True
 
 
 db = SQLAlchemy()
@@ -33,3 +33,9 @@ handler.setFormatter(logging.Formatter(
 ))
 app.logger.addHandler(handler)
 app.logger.setLevel(logging.INFO)
+
+
+from analysis.analysis import Analysis, MuonTrackAnalysis
+Analysis.active_analysis = MuonTrackAnalysis
+
+# todo: ideally would have choice of analysis type next to detector stop button and reanalyse button

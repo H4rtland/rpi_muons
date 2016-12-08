@@ -29,6 +29,8 @@ class Paths:
 
 
 class Analysis:
+    active_analysis = None
+
     @staticmethod
     def tick(db):
         new_result = Result.query.filter_by(status=ResultStatus.pending).first()
@@ -38,7 +40,7 @@ class Analysis:
             new_result.exception = ""
             db.session.commit()
             try:
-                Analysis.analyse(new_result, **new_result.parameters)
+                Analysis.active_analysis.analyse(new_result, **new_result.parameters)
                 new_result.status = ResultStatus.complete.name
                 app.logger.log(logging.INFO, "Finished parsing result {}".format(new_result.id))
             except Exception as exc:
@@ -49,11 +51,13 @@ class Analysis:
             finally:
                 db.session.commit()
 
+
+class MuonTrackAnalysis(Analysis):
     @staticmethod
     def analyse(result, shown_muon_paths=500, **kwargs):
         # Cache kwargs parameters
         local = locals().copy()
-        argspec = inspect.getfullargspec(Analysis.analyse)
+        argspec = inspect.getfullargspec(MuonTrackAnalysis.analyse)
         kwargs = {name:local[name] for name in argspec.args[-len(argspec.defaults):]}
         result.parameters = kwargs
 
@@ -102,4 +106,3 @@ class Analysis:
         html = plotly.offline.plot(fig, auto_open=False, output_type="div", show_link=False, image_width=500, filename="scatter_plot", validate=False)
 
         result.save_plot("path_track", html)
-

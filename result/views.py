@@ -61,7 +61,7 @@ def result_page(result_id):
     result = Result.query.get(result_id)
 
     parameters = result.parameters
-    argspec = inspect.getfullargspec(Analysis.analyse)
+    argspec = inspect.getfullargspec(Analysis.active_analysis.analyse)
     kwargs = dict(zip(argspec.args[-len(argspec.defaults):], argspec.defaults))
     for name, value in kwargs.items():
         if name not in parameters:
