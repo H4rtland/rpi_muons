@@ -33,7 +33,7 @@
             <tbody>
             {% for result in results %}
                 <tr>
-                    <td><a href="{{ url_for('result.result_page', result_id=result.id) }}">{{ result.id }}</a></td>
+                    <td><a href="{{ url_for('result.result_page', result_id=result.id) }}">Result {{ result.id }}</a></td>
                     <td><span class="label label-{{ result.label_type }}">{{ result.status.value }}</span></td>
                     <td>{{ result.detector_run_time_hms }}</td>
                     <td>
