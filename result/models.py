@@ -40,6 +40,7 @@ class Result(db.Model):
     def clear_plots(self):
         for filename in os.listdir(self.cache_folder):
             os.unlink(op.join(self.cache_folder, filename))
+        self.calculated_values = "[]"
 
     @property
     def cache_folder(self):
