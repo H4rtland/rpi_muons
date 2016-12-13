@@ -65,6 +65,8 @@ class LightPulseAnalysis(Analysis):
 
         with open(result.file, "r") as data_file:
             times = [float(t.strip()) for t in data_file.readlines()]
+
+        assert len(times) > 0, "results file is empty"
         
         data = [
             go.Histogram(
