@@ -86,7 +86,7 @@ def result_page(result_id):
         for plot_name in plot_priority:
             plot = result.get_plot(plot_name)
             if not plot is None:
-                plots.append(plot)
+                plots.append((plot_name, plot))
 
     return render_template("result.html", result=result, plots=plots, parameters=parameters, parameter_type=parameter_type)
 

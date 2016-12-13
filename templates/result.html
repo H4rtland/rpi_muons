@@ -80,8 +80,11 @@
                 <h2 class="panel-title">Plots</h2>
             </div>
             <div class="panel-body">
-                {% for plot in plots %}
+                {% for plot_name, plot in plots %}
                     {{ plot|safe }}
+                    {% for (name, value) in result.calculated_values_for_plot(plot_name) %}
+                        <p>{{ name }} = {{ value }}</p>
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>

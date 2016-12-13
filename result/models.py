@@ -20,7 +20,8 @@ class Result(db.Model):
     creation_date = Column(DateTime, default=datetime.now)
     file = Column(String)
     exception = Column(String)
-    analysis_parameters = Column(String, default="{}")
+    analysis_parameters = Column(String, default="[]")
+    calculated_values = Column(String, default="{}")
     detector_start_time = Column(DateTime)
     detector_end_time = Column(DateTime)
 
@@ -94,3 +95,15 @@ class Result(db.Model):
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
         return "{}h {}m {}s".format(hours, minutes, seconds)
+
+    def add_calculated_value(self, for_plot, name, value):
+        calc = ast.literal_eval(self.calculated_values)
+        calc.append((for_plot, name, value))
+        self.calculated_values = str(calc)
+
+
+    def calculated_values_for_plot(self, for_plot):
+        calc = ast.literal_eval(self.calculated_values)
+        for plot, name, value in calc:
+            if plot == for_plot:
+                yield name, value

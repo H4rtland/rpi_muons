@@ -98,6 +98,8 @@ class LightPulseAnalysis(Analysis):
         html = plotly.offline.plot(fig, auto_open=False, output_type="div", show_link=False, image_width=500, filename="histogram", validate=False)
 
         result.save_plot("pulses_histogram", html)
+
+        result.add_calculated_value("pulses_histogram", "total pulses", len(times))
         
         
 
