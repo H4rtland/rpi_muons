@@ -20,8 +20,8 @@ class Result(db.Model):
     creation_date = Column(DateTime, default=datetime.now)
     file = Column(String)
     exception = Column(String)
-    analysis_parameters = Column(String, default="[]")
-    calculated_values = Column(String, default="{}")
+    analysis_parameters = Column(String, default="{}")
+    calculated_values = Column(String, default="[]")
     detector_start_time = Column(DateTime)
     detector_end_time = Column(DateTime)
 
