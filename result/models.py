@@ -38,8 +38,9 @@ class Result(db.Model):
             cache_file.write(contents)
 
     def clear_plots(self):
-        for filename in os.listdir(self.cache_folder):
-            os.unlink(op.join(self.cache_folder, filename))
+        if os.path.exists(self.cache_folder):
+            for filename in os.listdir(self.cache_folder):
+                os.unlink(op.join(self.cache_folder, filename))
         self.calculated_values = "[]"
 
     @property
