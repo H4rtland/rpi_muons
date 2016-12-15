@@ -1,0 +1,7 @@
+[package]
+name = "testpi"
+version = "0.1.0"
+authors = ["pi"]
+
+[dependencies]
+byteorder = "0.5.3"
