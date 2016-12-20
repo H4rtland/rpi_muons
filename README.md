@@ -13,3 +13,6 @@ The entry point for the web interface code is muons.py.
 All the code I wrote on the Pi was moved into this folder and committed at the end of the project. The primary use was flashing an LED to test how our photodiode/amplifier circuit behaved with changing rate/brightness of the LED.
 
 The Pi specific code used in the light pulse detector web interface is in detector/rpi.py.
+
+![](https://raw.githubusercontent.com/H4rtland/rpi_muons/master/pi_setup.jpg)
+We also had a huge excess of 10kΩ resistors. The variable resistor was used to change the brightness of the LED for use with our other light detection circuit.
