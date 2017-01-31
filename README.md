@@ -1,5 +1,4 @@
-# Raspberry Pi + Muons
-
+# Raspberry Pi Muon Detector
 This code was supposed to power a Raspberry Pi controlled muon detector using leftover plastic scintillator bars from an old T2K experiment ([*The Electromagnetic Calorimeter for the T2K Near Detector*](https://arxiv.org/abs/1308.3445) page 11).
 
 However, the project came to a halt as we discovered that would could not measure light pulses small enough to detect muon interactions in the scintillator in a way that would scale to the number of bars we wanted to use (and be within budget).
